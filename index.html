@@ -1,10 +1,33 @@
 <html>
 <head>
-
+<style>
+    .slider {
+        width: 300px;
+        height: 20px;
+        background-color: silver;
+        position: relative;
+    }
+    .slider .state {
+        position: absolute;
+        left: 0;
+        margin-left: -0.5em;
+        width: 1em;
+        height: 1em;
+        border: 2px solid black;
+        border-radius: 50%;
+    }
+    .slider::before {
+        content: attr(data-param);
+    }
+</style>
 </head>
 <body>
 
 <canvas width="500" height="500"></canvas>
+
+<div class="slider" data-param="angles"><span class="state"></span></div>
+
+<script src="zepto.js"></script>
 
 <script>
 
@@ -137,7 +160,6 @@ function interpolate(a, b, alpha) {
 }
 
 function draw_tree(r_seed, x, y, angle, width) {
-    console.log(width);
     var ay, ax, len, w, fork_proportion;
     var i;
     var my_branch, c1, c2;
@@ -292,6 +314,20 @@ function onDomReady() {
     ctx = canvas.getContext('2d');
     drawing_init();
     render_frame();
+
+    var $body = $('body');
+
+    $('.slider').on('mousedown', function(ev1) {
+        var currentSlider = ev1.target;
+        $body.on('mousemove', function (ev2) {
+            var clickedValue = (ev2.pageX - currentSlider.offsetLeft) / currentSlider.offsetWidth;
+            clickedValue = Math.max(0, Math.min(clickedValue, 1));
+            $(currentSlider).children('.state').css({left: clickedValue * 100 + '%'});
+        });
+        $body.one('mouseup', function () {
+            $body.off('mousemove');
+        });
+    });
 }
 
 checkLoad();
