@@ -25,6 +25,8 @@
 
 <canvas width="500" height="500"></canvas>
 
+<div id="sliders"></div>
+
 <div class="slider" data-param="angles"><span class="state"></span></div>
 
 <script src="zepto.js"></script>
@@ -310,12 +312,18 @@ var checkLoad = function() {
 
 
 function onDomReady() {
-    var canvas = document.getElementsByTagName('canvas')[0];
-    ctx = canvas.getContext('2d');
+    ctx = $('canvas')[0].getContext('2d');
     drawing_init();
     render_frame();
 
     var $body = $('body');
+
+    var $sliders = $('#sliders');
+
+    for (key in tree_params_p) { // TODO better iteration
+        console.log(key);
+        $sliders.append('<div class="slider" data-param="' + key + '"><span class="state"></span></div>');
+    }
 
     $('.slider').on('mousedown', function(ev1) {
         var currentSlider = ev1.target;
@@ -323,7 +331,7 @@ function onDomReady() {
             var clickedValue = (ev2.pageX - currentSlider.offsetLeft) / currentSlider.offsetWidth;
             clickedValue = Math.max(0, Math.min(clickedValue, 1));
             $(currentSlider).children('.state').css({left: clickedValue * 100 + '%'});
-            tree_params_p['angles'] = clickedValue;
+            tree_params_p[currentSlider.getAttribute('data-param')] = clickedValue;
             render_frame();
         });
         $body.one('mouseup', function () {
