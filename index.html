@@ -8,16 +8,19 @@
     .slider {
         width: 300px;
         height: 20px;
-        background-color: silver;
+        background-color: #eee;
         position: relative;
+        margin-bottom: 5px;
+        border-bottom: 2px solid #777;
     }
     .slider .state {
         position: absolute;
         left: 0;
-        margin-left: -0.5em;
-        width: 1em;
-        height: 1em;
-        border: 2px solid black;
+        top: 1em;
+        margin-left: -0.25em;
+        width: 0.5em;
+        height: 0.5em;
+        background-color: #777;
         border-radius: 50%;
     }
     .slider::before {
@@ -30,8 +33,6 @@
 <canvas width="500" height="500"></canvas>
 
 <div id="sliders"></div>
-
-<div class="slider" data-param="angles"><span class="state"></span></div>
 
 <script src="zepto.js"></script>
 
