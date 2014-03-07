@@ -1,6 +1,10 @@
 <html>
 <head>
 <style>
+    canvas {
+        position: absolute;
+        left: 320px;
+    }
     .slider {
         width: 300px;
         height: 20px;
@@ -322,7 +326,9 @@ function onDomReady() {
 
     for (key in tree_params_p) { // TODO better iteration
         console.log(key);
-        $sliders.append('<div class="slider" data-param="' + key + '"><span class="state"></span></div>');
+        var newSlider = $('<div class="slider" data-param="' + key + '"><span class="state"></span></div>');
+        newSlider.children('.state').css({left: tree_params_p[key] * 100 + '%'});
+        $sliders.append(newSlider);
     }
 
     $('.slider').on('mousedown', function(ev1) {
