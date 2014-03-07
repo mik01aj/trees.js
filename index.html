@@ -323,6 +323,8 @@ function onDomReady() {
             var clickedValue = (ev2.pageX - currentSlider.offsetLeft) / currentSlider.offsetWidth;
             clickedValue = Math.max(0, Math.min(clickedValue, 1));
             $(currentSlider).children('.state').css({left: clickedValue * 100 + '%'});
+            tree_params_p['angles'] = clickedValue;
+            render_frame();
         });
         $body.one('mouseup', function () {
             $body.off('mousemove');
