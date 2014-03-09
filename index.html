@@ -334,6 +334,7 @@ function onDomReady() {
 
     $('.slider').on('mousedown', function(ev1) {
         var currentSlider = ev1.target;
+        $body.css({'-webkit-user-select': 'none'});
         $body.on('mousemove', function (ev2) {
             var clickedValue = (ev2.pageX - currentSlider.offsetLeft) / currentSlider.offsetWidth;
             clickedValue = Math.max(0, Math.min(clickedValue, 1));
@@ -343,6 +344,7 @@ function onDomReady() {
         });
         $body.one('mouseup', function () {
             $body.off('mousemove');
+            $body.css({'-webkit-user-select': ''});
         });
     });
 }
