@@ -128,18 +128,17 @@ function draw_tree(r_seed, x, y, angle, width) {
     w = width * tree_params_p.width * 20;
 
     ay = Math.sin(angle);
-    ax = -Math.cos(angle); {
-        my_branch = {
-            left: {
-                x: x + ax * w,
-                y: y - ay * w,
-            },
-            right: {
-                x: x - ax * w,
-                y: y + ay * w,
-            }
-        };
-    }
+    ax = -Math.cos(angle);
+    my_branch = {
+        left: {
+            x: x + ax * w,
+            y: y - ay * w,
+        },
+        right: {
+            x: x - ax * w,
+            y: y + ay * w,
+        }
+    };
 
     if (width < 0.001)
         return my_branch;
