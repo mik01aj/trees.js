@@ -88,8 +88,6 @@ var tree_seed = 12345;
 
 function drawing_init() {
     tree_params_p.height = 0.4;
-    tree_params_p.trunk_width = 0;
-    tree_params_p.trunk_height = 0.1;
     tree_params_p.width = 0.3;
     tree_params_p.angles = 0.5;
     tree_params_p.angle_up = 0;
@@ -98,7 +96,6 @@ function drawing_init() {
     tree_params_p.fork = 0.1;
     tree_params_p.branch_angle_correlation = 0.6;
     tree_params_p.branch_fork_correlation = 0;
-    tree_params_p.branch_endlen_correlation = 0;
 }
 
 function render_frame() {
@@ -123,25 +120,23 @@ function draw_tree(r_seed, x, y, angle, width) {
 
     seed(r_seed);
 
-    len = 300 * tree_params_p.height * interpolate(0.05 + width, -3 * width * (width - 1),
-        tree_params_p.branch_endlen_correlation);
-
+    len = 300 * tree_params_p.height * (0.05 + width);
     if (width == 1) {
-        len = 1000 * tree_params_p.height * tree_params_p.trunk_height;
+        len /= 2;
     }
-    w = width * tree_params_p.width * 10;
+
+    w = width * tree_params_p.width * 20;
 
     ay = Math.sin(angle);
     ax = -Math.cos(angle); {
-        var w2 = (width == 1 ? w + tree_params_p.trunk_width * 10 : w);
         my_branch = {
             left: {
-                x: x + ax * w2,
-                y: y - ay * w2,
+                x: x + ax * w,
+                y: y - ay * w,
             },
             right: {
-                x: x - ax * w2,
-                y: y + ay * w2,
+                x: x - ax * w,
+                y: y + ay * w,
             }
         };
     }
@@ -231,6 +226,9 @@ function onDomReady() {
 
     $('.slider').on('mousedown', function(ev1) {
         var currentSlider = ev1.target;
+        while (!currentSlider.getAttribute('data-param')) {
+            currentSlider = currentSlider.parentNode;
+        }
         $html.css({
             '-webkit-user-select': 'none'
         });
