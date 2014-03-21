@@ -145,12 +145,6 @@ function drawing_init() {
     tree_params_p.branch_angle_correlation = 0.5;
     tree_params_p.branch_fork_correlation = 0;
     tree_params_p.branch_endlen_correlation = 0;
-    tree_params_p.leaf_distr = 0.5;
-    tree_params_p.leaf_length = 0.3;
-    tree_params_p.leaf_width = 0.7;
-    tree_params_p.leaf_angle_mult = 0;
-    tree_params_p.leaf_shape = 0.5;
-    tree_params_p.leaf_var = 0;
 }
 
 function render_frame() {
@@ -272,40 +266,6 @@ function draw_tree(r_seed, x, y, angle, width) {
     ctx.lineWidth = 0.2;
     ctx.fill();
     ctx.stroke();
-
-
-    // drawing leaves
-//   seed(r_seed);
-//   chseed(1234);
-//
-//   if (width + rand_uniform() < tree_params_p.leaf_distr) {
-//      var leaf_dist = 1/(0.01+tree_params_p.leaf_distr);
-//      for (i=0; i<1; i++) {
-//         int side = ((i)%2)*2 - 1;
-//         var lx = x - ay*i*leaf_dist + side*ax*w;
-//         var ly = y - ax*i*leaf_dist - side*ay*w;
-//         var la = angle + side*0.4 * tree_params_p.leaf_angle_mult;
-//         var lax = Math.sin(la);
-//         var lay = -cos(la);
-//         var ll = tree_params_p.leaf_length*5.0;
-//         var lw = normalvariate(tree_params_p.leaf_width, tree_params_p.leaf_var)*ll/2;
-//         var ls = normalvariate(tree_params_p.leaf_shape, tree_params_p.leaf_var);
-//         console.assert(side == 1 || side == -1);
-//
-//         glColor3f(normalvariate(0.1, 0.07),
-//                   normalvariate(0.7, 0.07),
-//                   normalvariate(0.2, 0.07));
-////         glColor3f(1,1,1);
-//         glBegin(GL_QUADS);
-//            glVertex2f(lx,                      ly);
-//            glVertex2f(lx + lax*ll*ls + lay*lw, ly + lay*ll*ls - lax*lw);
-//            glVertex2f(lx + lax*ll,             ly + lay*ll);
-//            glVertex2f(lx + lax*ll*ls - lay*lw, ly + lay*ll*ls + lax*lw);
-//         glEnd();
-//
-//         iters++;
-//      }
-//   }
 
     return my_branch;
 }
