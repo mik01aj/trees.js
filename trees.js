@@ -1,10 +1,11 @@
-
 // most of the code here was translated from python module random
 
 // 4 * _exp(-0.5)/_sqrt(2.0)
 var NV_MAGICCONST = 1.7155277699214135;
 
-var seed_x = 0, seed_y = 0, seed_z = 0;
+var seed_x = 0,
+    seed_y = 0,
+    seed_z = 0;
 
 // Normal distribution.
 // mu = mean, sigma = standard deviation
@@ -27,7 +28,8 @@ function normalvariate(mu, sigma) {
 }
 
 function normalvariate2(params) {
-    return normalvariate(params.mean, params.var);
+    return normalvariate(params.mean, params.
+        var);
 }
 
 
@@ -111,9 +113,9 @@ function render_frame() {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, 500, 500); // TODO w, h
 
-//   draw_tree(tree_seed-10000, 25, 95, 0, 1.0);
+    //   draw_tree(tree_seed-10000, 25, 95, 0, 1.0);
     draw_tree(tree_seed, 250, 490, 0, 1.0);
-//   draw_tree(tree_seed+10000, 75, 95, 0, 1.0);
+    //   draw_tree(tree_seed+10000, 75, 95, 0, 1.0);
 }
 
 function interpolate(a, b, alpha) {
@@ -129,9 +131,8 @@ function draw_tree(r_seed, x, y, angle, width) {
 
     seed(r_seed);
 
-    len = 300 * tree_params_p.height
-            * interpolate(0.05 + width, -3 * width * (width - 1),
-            tree_params_p.branch_endlen_correlation);
+    len = 300 * tree_params_p.height * interpolate(0.05 + width, -3 * width * (width - 1),
+        tree_params_p.branch_endlen_correlation);
 
     if (width == 1) {
         len = 1000 * tree_params_p.height * tree_params_p.trunk_height;
@@ -139,8 +140,7 @@ function draw_tree(r_seed, x, y, angle, width) {
     w = width * tree_params_p.width * 10;
 
     ay = Math.sin(angle);
-    ax = -Math.cos(angle);
-    {
+    ax = -Math.cos(angle); {
         var w2 = (width == 1 ? w + tree_params_p.trunk_width * 10 : w);
         my_branch = {
             left: {
@@ -162,8 +162,7 @@ function draw_tree(r_seed, x, y, angle, width) {
     y += ax * len;
 
     {
-        var mean = tree_params_p.fork * 5
-                * ((rand_uniform() > 0.5) ? 1 : -1);
+        var mean = tree_params_p.fork * 5 * ((rand_uniform() > 0.5) ? 1 : -1);
         var variance = tree_params_p.fork_var * 5;
         var mult = interpolate(1, width, tree_params_p.branch_fork_correlation);
         fork_proportion = Math.atan(normalvariate(mean, variance) * mult) / Math.PI + 0.5;
@@ -174,12 +173,12 @@ function draw_tree(r_seed, x, y, angle, width) {
     for (i = 0; i < 2; i++) {
         var side = straight ? 0 : i * 2 - 1; // 1 or -1
         var other_branch_p = straight ? 0.1 :
-                (side == 1 ? fork_proportion : 1 - fork_proportion);
+            (side == 1 ? fork_proportion : 1 - fork_proportion);
         var new_width = width * (1 - other_branch_p);
         var angle_mult = Math.pow(1 - new_width, Math.pow(tree_params_p.branch_angle_correlation, 3) * 10);
         var angle_mean = side * tree_params_p.angles;
         var angle_diff = normalvariate(angle_mean,
-                tree_params_p.angles_var);
+            tree_params_p.angles_var);
         var new_angle = angle + Math.atan(angle_mult * angle_diff);
         var new_seed;
 
@@ -194,19 +193,18 @@ function draw_tree(r_seed, x, y, angle, width) {
         // recursion!
         if (i == 0) {
             c1 = draw_tree(new_seed * 1000000,
-                    x + ax * w * other_branch_p,
-                    y - ay * w * other_branch_p,
-                    new_angle,
-                    new_width);
+                x + ax * w * other_branch_p,
+                y - ay * w * other_branch_p,
+                new_angle,
+                new_width);
             if (straight)
                 break;
-        }
-        else
+        } else
             c2 = draw_tree(new_seed * 1000000,
-                    x - ax * w * other_branch_p,
-                    y + ay * w * other_branch_p,
-                    new_angle,
-                    new_width);
+                x - ax * w * other_branch_p,
+                y + ay * w * other_branch_p,
+                new_angle,
+                new_width);
     }
 
     //glBegin(w > 0.08 ? GL_POLYGON : GL_LINE_LOOP);
@@ -248,23 +246,31 @@ function onDomReady() {
     for (key in tree_params_p) { // TODO better iteration
         console.log(key);
         var newSlider = $('<div class="slider" data-param="' + key + '"><span class="state"></span></div>');
-        newSlider.children('.state').css({left: tree_params_p[key] * 100 + '%'});
+        newSlider.children('.state').css({
+            left: tree_params_p[key] * 100 + '%'
+        });
         $sliders.append(newSlider);
     }
 
     $('.slider').on('mousedown', function(ev1) {
         var currentSlider = ev1.target;
-        $body.css({'-webkit-user-select': 'none'});
-        $body.on('mousemove', function (ev2) {
+        $body.css({
+            '-webkit-user-select': 'none'
+        });
+        $body.on('mousemove', function(ev2) {
             var clickedValue = (ev2.pageX - currentSlider.offsetLeft) / currentSlider.offsetWidth;
             clickedValue = Math.max(0, Math.min(clickedValue, 1));
-            $(currentSlider).children('.state').css({left: clickedValue * 100 + '%'});
+            $(currentSlider).children('.state').css({
+                left: clickedValue * 100 + '%'
+            });
             tree_params_p[currentSlider.getAttribute('data-param')] = clickedValue;
             render_frame();
         });
-        $body.one('mouseup', function () {
+        $body.one('mouseup', function() {
             $body.off('mousemove');
-            $body.css({'-webkit-user-select': ''});
+            $body.css({
+                '-webkit-user-select': ''
+            });
         });
     });
 }
