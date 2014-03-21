@@ -27,12 +27,6 @@ function normalvariate(mu, sigma) {
     return mu + z * sigma;
 }
 
-function normalvariate2(params) {
-    return normalvariate(params.mean, params.
-        var);
-}
-
-
 //  Get the next random number in the range [0.0, 1.0).
 function rand_uniform() {
     console.assert(seed_x != 0);
@@ -86,6 +80,7 @@ function chseed(s) {
     seed_x = (seed_x + s) % 30268 + 1;
 }
 
+// -------------------------- end random --------------
 
 var tree_params_p = {};
 var ctx;
@@ -97,14 +92,11 @@ function drawing_init() {
     tree_params_p.trunk_height = 0.1;
     tree_params_p.width = 0.3;
     tree_params_p.angles = 0.5;
-    tree_params_p.angles_var = 0;
     tree_params_p.angle_up = 0;
     tree_params_p.angle_down = 0;
     tree_params_p.angle_hor = 0;
     tree_params_p.fork = 0.1;
-    tree_params_p.fork_var = 0.05;
-    tree_params_p.straight_prob = 0;
-    tree_params_p.branch_angle_correlation = 0.5;
+    tree_params_p.branch_angle_correlation = 0.6;
     tree_params_p.branch_fork_correlation = 0;
     tree_params_p.branch_endlen_correlation = 0;
 }
@@ -161,62 +153,47 @@ function draw_tree(r_seed, x, y, angle, width) {
     x += ay * len;
     y += ax * len;
 
-    {
-        var mean = tree_params_p.fork * 5 * ((rand_uniform() > 0.5) ? 1 : -1);
-        var variance = tree_params_p.fork_var * 5;
-        var mult = interpolate(1, width, tree_params_p.branch_fork_correlation);
-        fork_proportion = Math.atan(normalvariate(mean, variance) * mult) / Math.PI + 0.5;
-    }
+    fork_proportion = Math.atan(
+        tree_params_p.fork * 5 * ((rand_uniform() > 0.5) ? 1 : -1) *
+            interpolate(1, width, tree_params_p.branch_fork_correlation)
+    ) / Math.PI + 0.5;
 
-    var straight = (rand_uniform() < tree_params_p.straight_prob);
+    seed(r_seed);
 
     for (i = 0; i < 2; i++) {
-        var side = straight ? 0 : i * 2 - 1; // 1 or -1
-        var other_branch_p = straight ? 0.1 :
-            (side == 1 ? fork_proportion : 1 - fork_proportion);
+        var side = i * 2 - 1; // 1 or -1
+        var other_branch_p = (side == 1 ? fork_proportion : 1 - fork_proportion);
         var new_width = width * (1 - other_branch_p);
         var angle_mult = Math.pow(1 - new_width, Math.pow(tree_params_p.branch_angle_correlation, 3) * 10);
-        var angle_mean = side * tree_params_p.angles;
-        var angle_diff = normalvariate(angle_mean,
-            tree_params_p.angles_var);
-        var new_angle = angle + Math.atan(angle_mult * angle_diff);
-        var new_seed;
+        var new_angle = angle + Math.atan(angle_mult * side * tree_params_p.angles);
 
         new_angle += tree_params_p.angle_down * Math.sin(new_angle) * Math.pow(1 - width, 5);
         new_angle -= tree_params_p.angle_up * Math.sin(new_angle) * Math.pow(1 - width, 10);
         new_angle += tree_params_p.angle_hor * Math.sin(new_angle * 2) * Math.pow(1 - width, 15);
 
-        seed(r_seed);
-        chseed(i * 12345);
-        new_seed = rand_uniform();
-
         // recursion!
         if (i == 0) {
-            c1 = draw_tree(new_seed * 1000000,
+            c1 = draw_tree(r_seed * 5 + 1,
                 x + ax * w * other_branch_p,
                 y - ay * w * other_branch_p,
                 new_angle,
                 new_width);
-            if (straight)
-                break;
-        } else
-            c2 = draw_tree(new_seed * 1000000,
+        } else {
+            c2 = draw_tree(r_seed * 7 + 1,
                 x - ax * w * other_branch_p,
                 y + ay * w * other_branch_p,
                 new_angle,
                 new_width);
+        }
     }
 
-    //glBegin(w > 0.08 ? GL_POLYGON : GL_LINE_LOOP);
     ctx.beginPath();
     ctx.moveTo(my_branch.right.x, my_branch.right.y);
     ctx.lineTo(my_branch.left.x, my_branch.left.y);
     ctx.lineTo(c1.left.x, c1.left.y);
     ctx.lineTo(c1.right.x, c1.right.y);
-    if (!straight) {
-        ctx.lineTo(c2.left.x, c2.left.y);
-        ctx.lineTo(c2.right.x, c2.right.y);
-    }
+    ctx.lineTo(c2.left.x, c2.left.y);
+    ctx.lineTo(c2.right.x, c2.right.y);
     ctx.closePath();
 
     ctx.fillStyle = 'white';
@@ -239,7 +216,7 @@ function onDomReady() {
     drawing_init();
     render_frame();
 
-    var $body = $('body');
+    var $html = $('html');
 
     var $sliders = $('#sliders');
 
@@ -254,10 +231,10 @@ function onDomReady() {
 
     $('.slider').on('mousedown', function(ev1) {
         var currentSlider = ev1.target;
-        $body.css({
+        $html.css({
             '-webkit-user-select': 'none'
         });
-        $body.on('mousemove', function(ev2) {
+        $html.on('mousemove', function(ev2) {
             var clickedValue = (ev2.pageX - currentSlider.offsetLeft) / currentSlider.offsetWidth;
             clickedValue = Math.max(0, Math.min(clickedValue, 1));
             $(currentSlider).children('.state').css({
@@ -266,9 +243,9 @@ function onDomReady() {
             tree_params_p[currentSlider.getAttribute('data-param')] = clickedValue;
             render_frame();
         });
-        $body.one('mouseup', function() {
-            $body.off('mousemove');
-            $body.css({
+        $html.one('mouseup', function() {
+            $html.off('mousemove');
+            $html.css({
                 '-webkit-user-select': ''
             });
         });
